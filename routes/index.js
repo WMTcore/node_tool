@@ -24,8 +24,9 @@ router.get('/', function(req, res) {
 
 function Analyse(path) {
 	warnValue = {};
-	var data = Excel.parse(__dirname + '/1.xls'),
+	var data = Excel.parse(path),
 		info = {};
+	console.error(data, path)
 	data.forEach(function(table) {
 		for (var i = 2; i < table.data.length; i++) {
 			var value = table.data[i];
@@ -34,10 +35,13 @@ function Analyse(path) {
 			info[value[1]][time[0]] = info[value[1]][time[0]] || [];
 			info[value[1]][time[0]].push(time[1])
 		}
+		// console.error(info)
 		for (var name in info) {
 			for (var date in info[name]) {
 				var value = info[name][date];
-				value.sort();
+				value.sort(function(a, b) {
+					return new Date(date+' '+a)-new Date(date+' '+b)>0;
+				});
 				if (value[0] > beginTime) {
 					PushToWarn(name, date + ' ' + value[0]);
 				}

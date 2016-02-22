@@ -12,12 +12,21 @@
   <body>
 
   <div id="container" class="container">
+  <table border="1" width='600px' align='center'>
+    <tr>
+      <th>姓 名</th>
+      <th>时 间</th>
+    </tr>
   <% for(var name in data) {%>
-  <div >
-  姓名：<%- name %>&nbsp;&nbsp;&nbsp;
-  时间： <%- data[name] %>
-  </ div>
+   <% for(var time in data[name]){%>
+    <tr>
+      <td><%- name %></td>
+      <td><%- data[name][time] %></td>
+    <tr>
+    <% } %>
+
   <% } %>      
-  </div> 
+  </table>
+    </div> 
   </body>
 </html>
