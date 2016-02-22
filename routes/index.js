@@ -23,7 +23,7 @@ router.get('/', function(req, res) {
 });
 
 function Analyse(path) {
-	warnValue={};
+	warnValue = {};
 	var data = Excel.parse(__dirname + '/1.xls'),
 		info = {};
 	data.forEach(function(table) {
@@ -39,7 +39,7 @@ function Analyse(path) {
 				var value = info[name][date];
 				value.sort();
 				if (value[0] > beginTime) {
-					PushToWarn(name, date + '' + value[0]);
+					PushToWarn(name, date + ' ' + value[0]);
 				}
 				if (value[value.length - 1] < endTime) {
 					PushToWarn(name, date + ' ' + value[value.length - 1]);
@@ -96,16 +96,17 @@ router.post('/', function(req, res) {
 		var avatarName = Math.random() + '.' + extName;
 		var newPath = form.uploadDir + avatarName;
 
-		console.log(newPath);
+		// console.log(newPath);
 		fs.renameSync(files.fulAvatar.path, newPath); //重命名
 		Analyse(newPath);
+		res.render('warnValue', {
+			data: warnValue
+		});
 	});
 
 	// res.locals.success = '上传成功';
 	// res.json(warnValue)
-	res.render('warnValue', {
-		data: warnValue
-	});
+
 });
 
 
