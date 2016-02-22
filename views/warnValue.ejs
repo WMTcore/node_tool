@@ -3,30 +3,68 @@
   <meta charset="utf-8">
   <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">	    -->
-  <title>考勤异常数据</title>
+  <title>考勤数据</title>
   
   <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="/stylesheets/signin.css" />
+  <style> 
+    body{ text-align:center} 
+</style> 
   </head>
 
   <body>
 
   <div id="container" class="container">
-  <table border="1" width='600px' align='center'>
-    <tr>
-      <th>姓 名</th>
-      <th>时 间</th>
-    </tr>
-  <% for(var name in data) {%>
-   <% for(var time in data[name]){%>
-    <tr>
-      <td><%- name %></td>
-      <td><%- data[name][time] %></td>
-    <tr>
-    <% } %>
+    <div>  迟到时间：</div>
+      <table border="1" width='600px' align='center'>
+         <tr>
+           <th>姓 名</th>
+           <th>时 间</th>
+         </tr>
+       <% for(var name in data.late) {%>
+        <% for(var time in data.late[name]){%>
+         <tr>
+           <td><%- name %></td>
+           <td><%- data.late[name][time] %></td>
+         <tr>
+         <% } %>
 
-  <% } %>      
-  </table>
+       <% } %>      
+      </table>
+      </br>
+    <div>  早退时间：</div>
+       <table border="1" width='600px' align='center'>
+         <tr>
+           <th>姓 名</th>
+           <th>时 间</th>
+         </tr>
+       <% for(var name in data.early) {%>
+        <% for(var time in data.early[name]){%>
+         <tr>
+           <td><%- name %></td>
+           <td><%- data.early[name][time] %></td>
+         <tr>
+         <% } %>
+
+       <% } %>      
+       </table>
+       </br>
+    <div style:{text-align:center}>加班时间:</div>
+           <table border="1" width='600px' align='center'>
+         <tr>
+           <th>姓 名</th>
+           <th>时 间</th>
+         </tr>
+       <% for(var name in data.over) {%>
+        <% for(var time in data.over[name]){%>
+         <tr>
+           <td><%- name %></td>
+           <td><%- data.over[name][time] %></td>
+         <tr>
+         <% } %>
+
+       <% } %>      
+       </table>
     </div> 
   </body>
 </html>

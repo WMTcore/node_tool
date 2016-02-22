@@ -8,11 +8,19 @@ var formidable = require('formidable'),
 
 var beginTime = '8:35:00',
 	endTime = '17:30:00',
+	overTime = '18:00:00',
 	warnValue = {};
 
-function PushToWarn(name, time) {
-	warnValue[name] = warnValue[name] || [];
-	warnValue[name].push(time);
+function PushToWarn(type, name, time) {
+	warnValue[type] = warnValue[type] || {};
+	warnValue[type][name] = warnValue[type][name] || [];
+	warnValue[type][name].push(time);
+}
+
+function CompareTimeLarge(timeA, timeB) {
+	if (new Date('0000 ' + timeA) - new Date('0000 ' + timeB)>0)
+		return true;
+	return false;
 }
 
 /* GET home page. */
@@ -26,7 +34,7 @@ function Analyse(path) {
 	warnValue = {};
 	var data = Excel.parse(path),
 		info = {};
-	console.error(data, path)
+	// console.error(data, path)
 	data.forEach(function(table) {
 		for (var i = 2; i < table.data.length; i++) {
 			var value = table.data[i];
@@ -40,17 +48,20 @@ function Analyse(path) {
 			for (var date in info[name]) {
 				var value = info[name][date];
 				value.sort(function(a, b) {
-					return new Date(date+' '+a)-new Date(date+' '+b)>0;
+					return new Date(date + ' ' + a) - new Date(date + ' ' + b) > 0;
 				});
-				if (value[0] > beginTime) {
-					PushToWarn(name, date + ' ' + value[0]);
+				if (CompareTimeLarge(value[0], beginTime)) {
+					PushToWarn('late', name, date + ' ' + value[0]);
 				}
-				if (value[value.length - 1] < endTime) {
-					PushToWarn(name, date + ' ' + value[value.length - 1]);
+				if (!CompareTimeLarge(value[value.length - 1], endTime)) {
+					PushToWarn('early', name, date + ' ' + value[value.length - 1]);
+				}
+				if (CompareTimeLarge(value[value.length - 1], overTime)) {
+					PushToWarn('over', name, date + ' ' + value[value.length - 1])
 				}
 			}
 		}
-		console.error(warnValue);
+		// console.error(warnValue);
 	});
 };
 
