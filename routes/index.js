@@ -6,7 +6,7 @@ var formidable = require('formidable'),
 	TITLE = 'formidable上传示例',
 	AVATAR_UPLOAD_FOLDER = '/xls/';
 
-var beginTime = '8:35:00',
+var beginTime = '8:36:00',
 	endTime = '17:30:00',
 	overTime = '18:00:00',
 	warnValue = {};
@@ -18,7 +18,7 @@ function PushToWarn(type, name, time) {
 }
 
 function CompareTimeLarge(timeA, timeB) {
-	if (new Date('0000 ' + timeA) - new Date('0000 ' + timeB)>0)
+	if (new Date('0000 ' + timeA) - new Date('0000 ' + timeB) > 0)
 		return true;
 	return false;
 }
@@ -71,53 +71,58 @@ router.post('/', function(req, res) {
 	form.uploadDir = 'public' + AVATAR_UPLOAD_FOLDER; //设置上传目录
 	form.keepExtensions = true; //保留后缀
 	form.maxFieldsSize = 2 * 1024 * 1024; //文件大小
+	try {
+		form.parse(req, function(err, fields, files) {
 
-	form.parse(req, function(err, fields, files) {
+			if (err) {
+				res.locals.error = err;
+				res.render('index', {
+					title: TITLE
+				});
+				return;
+			}
 
-		if (err) {
-			res.locals.error = err;
-			res.render('index', {
-				title: TITLE
+			var extName = ''; //后缀名
+
+			if (files.fulAvatar.type == 'application/vnd.ms-excel')
+				extName = 'xls'
+				// switch (files.fulAvatar.type) {
+				// 	case :
+				// 		extName = 'els';
+				// 		break;
+				// 	case 'image/jpeg':
+				// 		extName = 'jpg';
+				// 		break;
+				// 	case 'image/png':
+				// 		extName = 'png';
+				// 		break;
+				// 	case 'image/x-png':
+				// 		extName = 'png';
+				// 		break;
+				// }
+
+			if (extName.length == 0) {
+				res.locals.error = '只支持xls文件';
+				return res.render('index', {
+					title: TITLE
+				});
+			}
+
+			var avatarName = Math.random() + '.' + extName;
+			var newPath = form.uploadDir + avatarName;
+
+			// console.log(newPath);
+			fs.renameSync(files.fulAvatar.path, newPath); //重命名
+			Analyse(newPath);
+			res.render('warnValue', {
+				data: warnValue
 			});
-			return;
-		}
-
-		var extName = ''; //后缀名
-
-		if (files.fulAvatar.type == 'application/vnd.ms-excel')
-			extName = 'xls'
-			// switch (files.fulAvatar.type) {
-			// 	case :
-			// 		extName = 'els';
-			// 		break;
-			// 	case 'image/jpeg':
-			// 		extName = 'jpg';
-			// 		break;
-			// 	case 'image/png':
-			// 		extName = 'png';
-			// 		break;
-			// 	case 'image/x-png':
-			// 		extName = 'png';
-			// 		break;
-			// }
-
-		if (extName.length == 0) {
-			res.locals.error = '只支持xls文件';
-			return res.render('index', {
-				title: TITLE
-			});
-		}
-
-		var avatarName = Math.random() + '.' + extName;
-		var newPath = form.uploadDir + avatarName;
-
-		// console.log(newPath);
-		fs.renameSync(files.fulAvatar.path, newPath); //重命名
-		Analyse(newPath);
-		res.render('warnValue', {
-			data: warnValue
 		});
-	});
+	} catch (error) {
+		res.status(500).json({
+			data: '出错，请重试'
+		})
+	}
 
 	// res.locals.success = '上传成功';
 	// res.json(warnValue)
