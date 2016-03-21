@@ -31,38 +31,42 @@ router.get('/', function(req, res) {
 });
 
 function Analyse(path) {
-	warnValue = {};
-	var data = Excel.parse(path),
-		info = {};
-	// console.error(data, path)
-	data.forEach(function(table) {
-		for (var i = 2; i < table.data.length; i++) {
-			var value = table.data[i];
-			var time = value[3].split(' ');
-			info[value[1]] = info[value[1]] || {};
-			info[value[1]][time[0]] = info[value[1]][time[0]] || [];
-			info[value[1]][time[0]].push(time[1])
-		}
-		// console.error(info)
-		for (var name in info) {
-			for (var date in info[name]) {
-				var value = info[name][date];
-				value.sort(function(a, b) {
-					return new Date(date + ' ' + a) - new Date(date + ' ' + b) > 0;
-				});
-				if (CompareTimeLarge(value[0], beginTime)) {
-					PushToWarn('late', name, date + ' ' + value[0]);
-				}
-				if (!CompareTimeLarge(value[value.length - 1], endTime)) {
-					PushToWarn('early', name, date + ' ' + value[value.length - 1]);
-				}
-				if (CompareTimeLarge(value[value.length - 1], overTime)) {
-					PushToWarn('over', name, date + ' ' + value[value.length - 1])
+	try {
+		warnValue = {};
+		var data = Excel.parse(path),
+			info = {};
+		// console.error(data, path)
+		data.forEach(function(table) {
+			for (var i = 2; i < table.data.length; i++) {
+				var value = table.data[i];
+				var time = value[3].split(' ');
+				info[value[1]] = info[value[1]] || {};
+				info[value[1]][time[0]] = info[value[1]][time[0]] || [];
+				info[value[1]][time[0]].push(time[1])
+			}
+			// console.error(info)
+			for (var name in info) {
+				for (var date in info[name]) {
+					var value = info[name][date];
+					value.sort(function(a, b) {
+						return new Date(date + ' ' + a) - new Date(date + ' ' + b) > 0;
+					});
+					if (CompareTimeLarge(value[0], beginTime)) {
+						PushToWarn('late', name, date + ' ' + value[0]);
+					}
+					if (!CompareTimeLarge(value[value.length - 1], endTime)) {
+						PushToWarn('early', name, date + ' ' + value[value.length - 1]);
+					}
+					if (CompareTimeLarge(value[value.length - 1], overTime)) {
+						PushToWarn('over', name, date + ' ' + value[value.length - 1])
+					}
 				}
 			}
-		}
-		// console.error(warnValue);
-	});
+			// console.error(warnValue);
+		});
+	} catch (error) {
+		throw (error)
+	}
 };
 
 router.post('/', function(req, res) {
