@@ -8,7 +8,7 @@ var formidable = require('formidable'),
 
 var beginTime = '8:36:00',
 	endTime = '17:30:00',
-	overTime = '18:00:00',
+	overTime = '19:00:00',
 	warnValue = {};
 
 function PushToWarn(type, name, time) {
