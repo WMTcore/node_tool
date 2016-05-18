@@ -42,8 +42,10 @@ let server = http.createServer(function(request, response) {
 		ext = 'html';
 	};
 	fs.exists(realUrl, function(exists) {
-		if (!exists) SendFile(__dirname + '/404.html', 404, 'html', response);
-		else SendFile(realUrl, 200, ext, response);
+		if (!exists) {
+			console.error(realUrl);
+			SendFile(__dirname + '/404.html', 404, 'html', response);
+		} else SendFile(realUrl, 200, ext, response);
 	});
 });
 
@@ -54,6 +56,7 @@ function SendFile(dir, status, ext, response) {
 			response.writeHead(500, {
 				'Content-Type': 'text/plain'
 			});
+			console.error(dir);
 			return response.end(err);
 		} else {
 			let contentType = types[ext] || "text/plain";
